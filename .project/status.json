@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "project-control-plane",
+  "name": "Project Control Plane",
+  "summary": "用于统一查看和管理个人开发项目状态、反馈和想法的项目控制台。",
+  "status": "active",
+  "stage": "design",
+  "current": [
+    "产品目标、架构方向和隐私模型已形成初稿（README 与 docs/）。",
+    "项目状态已采用 Project Control Plane 状态契约 v1（schemaVersion 1），尚无应用代码、Registry 配置或测试。"
+  ],
+  "next": [
+    "确定本仓库如何引用 v1 状态 Schema（直接引用 Skill 或在本仓库维护副本）。",
+    "设计最小可用 Registry：项目列表格式与 status.json 读取流程。"
+  ],
+  "publicUrl": null,
+  "updatedAt": "2026-09-25"
+}
