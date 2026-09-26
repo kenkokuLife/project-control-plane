@@ -23,6 +23,10 @@ Control Plane 只读被管理项目，不主动修改它们。聚合数据可从
 
 项目本人或 Coding Agent 维护语义状态；CI/CD 可以维护客观信息，两者的职责分开。v1 只消费 status v1 契约内的数据，不另外抓取 Commit、Build、Deployment 或 HANDOFF 来补充 Dashboard 状态。
 
+## Project Status Schema ownership
+
+正式 canonical/public runtime schema 为本仓库的 [`schemas/project-status-v1.schema.json`](../schemas/project-status-v1.schema.json)。Skill 内 Schema 是 Agent workflow 的同步副本，必须与本仓库保持一致；运行时不依赖 private personal-skills。此次仅调整 ownership，v1 字段契约未变，`schemaVersion` 仍为 1；后续 breaking change 必须走 v2。来源、同步责任及校验入口见 [Schema ownership](schema-ownership.md)。
+
 ## Registry v1
 
 使用 `registry.yaml`，顶层包含 `version: 1` 和被管理项目列表 `projects`。
@@ -147,7 +151,7 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。未来若
 - 从真实 public repo 的 default branch 读取 `.project/status.json`，支持 Registry 的路径覆盖。
 - 接入 project status validation，验证 `schemaVersion: 1` 和 status v1 契约。
 - 暂不处理 private repo PAT；真正接入首个 private repo 时再按本文认证方案配置。
-- 实现验证前落实 canonical status v1 Schema 的引用方式；验证运行时使用 Node/TypeScript。
+- 直接加载本仓库 `schemas/project-status-v1.schema.json`；验证运行时使用 Node/TypeScript，并启用 date/uri 格式校验。P2 验证实现尚未开始。
 
 ### P3 Full Refresh
 

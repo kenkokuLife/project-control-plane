@@ -7,11 +7,11 @@
   "stage": "implementation",
   "current": [
     "v1 设计已确认；P1 Registry Reader 已完成，包含读取、验证、默认路径处理及禁用项目保留。",
-    "P1 的 52 项测试、TypeScript 类型检查与 git diff --check 通过。"
+    "P1 的 52 项测试、TypeScript 类型检查与 git diff --check 通过。",
+    "Project Status v1 canonical Schema 已发布在本仓库；与 Skill 冻结契约完全一致，并具备本地契约测试和副本比较入口。"
   ],
   "next": [
-    "落实 Project Status v1 Schema 的正式运行时引用方式。",
-    "进入 P2 GitHub Status Reader，当前尚未开始。"
+    "进入 P2 GitHub Status Reader，直接使用本仓库的 Project Status v1 Schema；当前尚未开始。"
   ],
   "publicUrl": null,
   "updatedAt": "2026-09-26"

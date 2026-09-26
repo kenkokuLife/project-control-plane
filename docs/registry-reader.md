@@ -28,4 +28,4 @@ pnpm typecheck
 
 Registry v1 顶层仅接受 `version` 和 `projects`，项目仅接受 `id`、`repo`、`enabled`、`statusPath`；未知字段及项目状态字段报错，避免拼写错误与重复的状态来源。`repo` 验证为两个以 `/` 分隔的非空仓库标识段，不接受 URL、空白或额外路径；不验证远端存在性。空项目列表允许。YAML 重复键、多文档及解析警告均拒绝。
 
-P1 不验证 status.json。进入 P2 时仍需落实 canonical status v1 Schema 的引用方式，见 Architecture 中的 P2 约定。
+P1 不验证 status.json。正式契约已发布为 `schemas/project-status-v1.schema.json`，P2 将直接加载它。`pnpm test:registry` 单独运行 P1 测试；`pnpm test` 同时运行独立的 Schema 测试，详见 [Schema ownership](schema-ownership.md)。

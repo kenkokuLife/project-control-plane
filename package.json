@@ -6,14 +6,19 @@
     "node": ">=22.18.0"
   },
   "scripts": {
-    "test": "node --test src/lib/registry.test.ts",
-    "typecheck": "tsc --noEmit"
+    "test": "node --test src/lib/registry.test.ts tests/schema.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "test:registry": "node --test src/lib/registry.test.ts",
+    "test:schema": "node --test tests/schema.test.mjs",
+    "schema:compare": "node scripts/check-schema-copy.mjs"
   },
   "dependencies": {
     "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@types/node": "^22.20.4",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "typescript": "~5.9.3"
   }
 }
