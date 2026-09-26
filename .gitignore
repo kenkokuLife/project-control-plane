@@ -1,1 +1,4 @@
 .project/backups/
+node_modules/
+.pnpm-store/
+.pnpm-cache/

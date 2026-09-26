@@ -4,14 +4,14 @@
   "name": "Project Control Plane",
   "summary": "用于统一查看和管理个人开发项目状态、反馈和想法的项目控制台。",
   "status": "active",
-  "stage": "design",
+  "stage": "implementation",
   "current": [
-    "Project Control Plane v1 的 Registry、读取、同步、聚合、存储、Dashboard 信息架构及技术栈已经确定并写入文档。",
-    "Project Control Plane Skill v1 已冻结，当前项目已正式接入状态管理体系。"
+    "v1 设计已确认；P1 Registry Reader 已完成，包含读取、验证、默认路径处理及禁用项目保留。",
+    "P1 的 52 项测试、TypeScript 类型检查与 git diff --check 通过。"
   ],
   "next": [
-    "实现 P1 Registry Reader：读取 registry.yaml，解析 version/projects，支持 enabled 和默认 statusPath。",
-    "P1 完成后进入 P2 GitHub Status Reader。"
+    "落实 Project Status v1 Schema 的正式运行时引用方式。",
+    "进入 P2 GitHub Status Reader，当前尚未开始。"
   ],
   "publicUrl": null,
   "updatedAt": "2026-09-26"

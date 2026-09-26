@@ -1,6 +1,6 @@
 # Architecture
 
-本文记录已确认的 v1 技术设计，尚未实现。产品范围及 future roadmap 见 [Vision](vision.md)，数据公开边界见 [Privacy Model](privacy-model.md)。
+本文记录已确认的 v1 技术设计；P1 Registry Reader 已实现，P2～P6 尚未实现。产品范围及 future roadmap 见 [Vision](vision.md)，数据公开边界见 [Privacy Model](privacy-model.md)。
 
 ## 技术栈：已确认 v1
 
@@ -133,14 +133,14 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。未来若
 
 ## 实现里程碑：已确认 v1
 
-按 P1 → P6 推进；下列均为待实现的验收目标。
+按 P1 → P6 推进；P1 已完成，其余为待实现的验收目标。
 
 ### P1 Registry Reader
 
 - 能读取 `registry.yaml`，解析顶层 `version: 1` 与 `projects`。
-- 支持 `enabled`，将禁用项目排除在本轮读取范围之外。
+- 支持 `enabled`，解析结果保留禁用项目；后续同步阶段再跳过。P1 不执行同步。
 - 未指定 `statusPath` 时默认使用 `.project/status.json`。
-- 字段和示例以本文 Registry v1 为准，足以开始 P1。
+- 字段和示例以本文 Registry v1 为准；实现与测试说明见 [Registry Reader](registry-reader.md)。
 
 ### P2 GitHub Status Reader
 

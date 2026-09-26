@@ -12,8 +12,8 @@ Dashboard v1 聚合各项目自行维护的状态，帮助快速了解项目进�
 
 ## 当前阶段
 
-v1 设计已确认，当前仍处于设计阶段，尚未实现应用、Registry 配置或同步工作流。文档中的配置与数据路径是设计约定，不代表相应文件或功能已经存在。
+v1 设计已确认，P1 Registry Reader 已完成：支持 Registry v1 读取、验证与默认路径处理，保留禁用项目。运行与 API 见 [Registry Reader](docs/registry-reader.md)。尚未实现 GitHub 读取、同步、Dashboard 或部署工作流。
 
 已确认采用 Astro + TypeScript、Node/TypeScript、`registry.yaml`、Cloudflare Pages 与 GitHub Actions。构建时完成 Full Refresh，再生成静态 Dashboard；具体运行链路以 Architecture 为准。
 
-下一步可开始 **P1 Registry Reader**，随后依次推进 P2 GitHub Status Reader、P3 Full Refresh、P4 Dashboard、P5 Cloudflare deployment、P6 Sync triggers。状态 Schema 的引用方式在 P2 前落实，真实数据部署的访问边界在 P5 前落实。
+下一步可开始 **P2 GitHub Status Reader**，随后依次推进 P3 Full Refresh、P4 Dashboard、P5 Cloudflare deployment、P6 Sync triggers。状态 Schema 的引用方式在 P2 前落实，真实数据部署的访问边界在 P5 前落实。
