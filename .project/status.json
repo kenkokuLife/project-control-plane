@@ -6,13 +6,13 @@
   "status": "active",
   "stage": "design",
   "current": [
-    "产品目标、架构方向和隐私模型已形成初稿（README 与 docs/）。",
-    "项目状态已采用 Project Control Plane 状态契约 v1（schemaVersion 1），尚无应用代码、Registry 配置或测试。"
+    "Project Control Plane v1 的 Registry、读取、同步、聚合、存储、Dashboard 信息架构及技术栈已经确定并写入文档。",
+    "Project Control Plane Skill v1 已冻结，当前项目已正式接入状态管理体系。"
   ],
   "next": [
-    "确定本仓库如何引用 v1 状态 Schema（直接引用 Skill 或在本仓库维护副本）。",
-    "设计最小可用 Registry：项目列表格式与 status.json 读取流程。"
+    "实现 P1 Registry Reader：读取 registry.yaml，解析 version/projects，支持 enabled 和默认 statusPath。",
+    "P1 完成后进入 P2 GitHub Status Reader。"
   ],
   "publicUrl": null,
-  "updatedAt": "2026-09-25"
+  "updatedAt": "2026-09-26"
 }

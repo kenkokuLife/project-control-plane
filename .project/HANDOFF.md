@@ -2,10 +2,10 @@
 
 ## Current State
 
-- 项目用于统一查看和管理个人开发项目状态、反馈和想法；当前处于设计阶段（`status: active`、`stage: design`）。
-- README、`docs/vision.md`、`docs/architecture.md`、`docs/privacy-model.md` 记录了产品目标、架构方向和隐私原则的初稿；文档存在不代表设计已定稿。
-- 尚无应用代码、依赖清单、测试、Registry 配置或 CI/CD 工作流。Registry、Feedback Inbox 和 Ideas 均为规划内容。
-- `.project/status.json` 采用 Project Control Plane 状态契约 v1（`schemaVersion: 1`），已通过 Project Control Plane Skill v1 的最低验证脚本（`validate_status.py`，PASS）。
+- Project Control Plane v1 的 Registry、读取、同步、聚合、存储、Dashboard 信息架构及技术栈已经确定并写入文档（README 与 docs/）。v1 设计已完成，准备进入 P1 Registry Reader 实现。
+- Project Control Plane Skill v1 已冻结，当前项目已正式接入状态管理体系；状态契约为 `schemaVersion: 1`。Skill 记录冻结日期为 2026-09-26。
+- `status: active`、`stage: design` 保持不变：设计已完成，但 P1 尚未开始。尚无应用代码、依赖清单、测试、Registry 配置或 CI/CD 工作流；Feedback Inbox 与 Ideas 属于 future。
+- 本次状态内容更新时间为 2026-09-26（UTC）；使用 Skill v1 的 `validate_status.py` 最低检查通过（PASS），未执行完整 JSON Schema 验证。
 
 ## Decisions
 
@@ -19,12 +19,14 @@
 
 ## Next
 
-1. 确定本仓库如何引用 v1 状态 Schema（直接引用 Skill 或在本仓库维护副本）。
-2. 设计最小可用 Registry：项目列表格式与 `status.json` 读取流程。
+1. 实现 P1 Registry Reader：读取 `registry.yaml`，解析 version/projects，支持 enabled 和默认 statusPath（`.project/status.json`）。
+2. P1 完成后进入 P2 GitHub Status Reader。
 
 ## Known Issues
 
-- 验证只达到最低检查级别，未执行完整 JSON Schema 验证（环境无 validator，未安装依赖）。
-- 本仓库目前不包含状态 Schema；架构文档中 Public Repository 包含 Schema 的设想，需在上面 Next 1 中落实。
-- `docs/privacy-model.md` 将“详细 Next Step”列为默认 Private。当前 `next` 与 README 已公开的阶段描述相当，判断为可公开；若写入更具体的下一步，需重新评估。
+- 本次验证为 Skill v1 最低检查，未执行完整 JSON Schema 验证；未安装依赖。该脚本用于项目状态维护，不是 v1 应用的 Python runtime。
+- Schema 的权威来源已确定为 Skill v1 canonical schema，本仓库不保留本地副本；P2 的 Node/TypeScript 验证实现如何引用该契约仍需落实（见 `docs/architecture.md` P2），不阻塞 P1。
+- P3 实现前仍需明确稳定 ID 的外层字段位置、失败时 `project` 的空值表达、完整同步状态枚举及失败时的时间字段语义。
+- Cloudflare Pages 已确定为部署平台；P5 部署真实个人数据前仍需确定私有访问控制方式，遵循 `docs/privacy-model.md`。
+- private repo 的 v1 初期认证已确定为 fine-grained PAT，真正接入第一个 private repo 时再配置，P2 暂不处理；P6 的 workflow / hook 具体接线留待实现。
 - 仓库没有可核实的公开部署地址，`publicUrl` 保持 `null`；尚无可运行应用，未验证运行效果。

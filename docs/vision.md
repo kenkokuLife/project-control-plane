@@ -1,84 +1,60 @@
 # Vision
 
-## 背景
+## 产品目标
 
-随着个人开发项目越来越多，最大的成本不再只是“怎么继续开发”，而是“重新理解这个项目”。
+个人项目暂停一段时间后，重新理解进展和下一步往往需要翻阅 README、Git、Issue、聊天和笔记。Project Control Plane 希望降低这种上下文恢复成本，让多个项目保持可理解、可继续的状态。
 
-一个项目暂停几周或几个月之后，重新开始时经常需要重新确认：
+它不替代 GitHub、Linear、Jira 等项目管理工具。长期愿景是保留“重新开始所需要的上下文”。
 
-- 这个项目现在做到哪里
-- 为什么当时这样设计
-- 下一步原本准备做什么
-- 哪些问题还没有解决
-- 当前部署在哪里
-- 最近一次修改是什么
-- 有没有来自外部用户的反馈
+## Dashboard v1：已确认
 
-这些信息通常分散在：
+打开页面后，在 10 秒内知道：
 
-- Git Commit
-- README
-- Issue
-- Chat
-- 本地笔记
-- Coding Agent 的上下文
-- 自己的记忆
+- 有哪些项目
+- 哪些正在进行
+- 做到哪里
+- 下一步是什么
+- 有没有同步异常
 
-Project Control Plane 希望降低这种 Context Recovery 成本。
+每个项目至少展示以下信息；状态读取失败时，仍保留该项目并展示可用的来源信息与错误，不能因缺少状态而隐藏项目。
 
-## 目标
+| 字段 | 展示含义 |
+| --- | --- |
+| `name` | 项目名称 |
+| `status` | 项目声明的状态 |
+| `stage` | 当前阶段 |
+| `current` | 当前进展 |
+| `next` | 下一步 |
+| `updatedAt` | 项目声明的更新时间 |
+| `publicUrl` | 公开地址（如果有） |
+| `source.repo` | 来源仓库 |
+| `sync.state` | Control Plane 的同步状态 |
 
-建立一个个人项目的统一控制面，让自己可以快速回答：
+页面按 Active、Paused、Completed+Archived、Idea 做轻量分组，Completed 与 Archived 合并展示。这里的 Idea 是已登记项目的状态分组，不是独立的 Ideas 收集功能。
 
-- 我现在有哪些项目？
-- 哪些项目正在进行？
-- 哪些暂停了？
-- 每个项目当前做到哪里？
-- 下一步是什么？
-- 最近发生了什么？
-- 有哪些 Open Items？
-- 有哪些外部 Feedback？
-- 有哪些还没有正式立项的 Idea？
+同步失败需要显示错误状态，例如 `unavailable`、`unauthorized`、`invalid`，以及必要的错误说明。同步状态与项目自己声明的业务状态分开。读取与失败处理规则见 [Architecture](architecture.md)。
 
-目标不是替代 GitHub、Linear、Jira 或其他项目管理工具。
+技术栈、构建运行链路、模块职责和 P1～P6 实现里程碑统一记录在 [Architecture](architecture.md#实现里程碑已确认-v1)。
 
-它更关注的是：
+### v1 不做
 
-> 在多个个人项目之间，持续保留“重新开始所需要的上下文”。
+- Kanban、百分比进度、Timeline、Task 管理
+- 搜索、Tag 系统、图表、Activity Feed
+- 登录系统
+- Public / Private 两套 Dashboard
+- Feedback Inbox、Ideas 收集与管理
 
-## 核心模型
+排除项不代表已经承诺后续实现。
 
-每个项目自己维护自己的状态。
+## Future roadmap
 
-Project Control Plane 负责：
+以下是长期方向，不进入 Dashboard v1：
 
-1. 发现项目
-2. 读取项目状态
-3. 聚合项目信息
-4. 展示整体状态
-5. 接收跨项目 Feedback
-6. 管理尚未归属具体项目的 Idea
+- **Feedback Inbox**：统一接收各项目网站的反馈，后续可探索来源项目与页面、反馈分类、处理状态和摘要。
+- **Ideas**：收集尚未正式立项的想法，并探索转换为正式项目。
+- **上下文扩展**：Open Items、Decision / Handoff 信息、Coding Agent 可读取的上下文、长期项目历史，以及额外的 Build / Deployment 信息。
+- **同步优化**：per-project persistent snapshot、incremental refresh，并保留 daily full reconciliation 兜底。v1 已采用每日全量兜底；未来变化是引入持久快照与增量刷新，详见 [Architecture](architecture.md)。
 
-项目本身仍然是 Source of Truth。
+Registry / Status 从其他仓库读取数据，而 Feedback / Ideas 需要 Control Plane 自己接收和写入数据，两者的数据生命周期不同。未来 Feedback 可能需要 API、D1 或其他持久化、Turnstile、Rate Limit、Honeypot、输入限制和隐私处理；这些不作为 v1 的基础设施引入。
 
-Control Plane 应该可以随时删除并重新构建，而不导致项目状态丢失。
-
-## 长期方向
-
-未来希望它不仅是 Dashboard，而是一个个人开发的 Context Hub。
-
-可能逐步支持：
-
-- Project Registry
-- Current / Next / Open Items
-- Deployment / Build 状态
-- Feedback Inbox
-- Idea Inbox
-- Decision / Handoff 信息
-- Coding Agent 可读取的项目上下文
-- Coding Agent 可使用的 Feedback 摘要
-- 长期项目历史
-
-最终希望做到：
-
-> 无论一个项目停了多久，都可以在很短时间内重新进入状态。
+公开范围与真实个人数据的边界统一以 [Privacy Model](privacy-model.md) 为准。

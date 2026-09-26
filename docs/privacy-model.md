@@ -2,106 +2,50 @@
 
 ## 基本原则
 
-Project Control Plane 的代码可以公开，但私人数据不进入公开仓库。
+> Public code, private personal data.
 
-核心原则：
+当前没有把真实个人项目数据公开成 public dashboard 的计划。仓库公开不意味着其关联的运行数据公开；`publicUrl` 或来源仓库可公开访问，也不构成公开整个聚合数据集的授权。
 
-> Public by design, private by data.
+## 可以公开的内容
 
-## 数据分类
+如果未来工具足够成熟，可以公开：
 
-### Public
+- 应用代码
+- 架构
+- Schema
+- 明确用于演示的 example data
+- 方法论
 
-适合公开的数据：
+这些是可公开的内容范围，不代表本仓库已经包含所有这些产物。
 
-- 项目名称
-- 项目简介
-- 技术栈
-- Public URL
-- 项目当前状态
-- 当前阶段
-- 最近公开更新时间
-- 公开 Milestone
-- 公开 Feedback 入口
+## 默认私有的运行数据
 
-这些内容可以用于：
+真实个人项目状态、Registry 中的真实仓库信息、聚合数据、Feedback、Ideas、私人备注及其他运行数据，不因应用 repo 公开而公开。
 
-- Project Dashboard
-- Portfolio
-- Public Project Registry
+不能仅凭字段名称把项目名称、状态、阶段、下一步或更新时间认定为适合公开。真实数据如需公开，应经过明确选择；示例数据应与真实运行数据分开。
 
-### Private
+私人运行数据不进入公开 Git 仓库。聚合产物即使未提交 Git，也必须在构建、部署和交付时保持这一边界。v1 的“无登录系统”不意味着部署为公开可访问的真实数据 Dashboard；部署平台已确认为 Cloudflare Pages，具体私有访问控制方式仍需在部署真实数据前确定（P5）；选择部署平台不改变上述隐私边界。
 
-默认不公开的数据：
+如未来私人数据确实需要 Git 版本管理，可以考虑独立的 Private Data Repository；这不是 v1 要求，也不需要维护两套应用代码。
 
-- 详细 Next Step
-- 私人 TODO
-- Personal Notes
-- Internal Open Items
-- 未公开 Idea
-- Feedback 原始内容
-- Email
-- 访问来源相关信息
-- Private Repository 信息
-- 凭证、Token、Secret
-- 与工作、客户或个人身份相关的敏感内容
+## Feedback 与防滥用：未来原则
 
-这些数据不进入公开 Git Repository。
+Feedback 尚属 future roadmap，其功能与潜在基础设施见 [Vision](vision.md)。即使来自公开网站，原始反馈也默认私有，公开展示必须经过明确选择。
 
-## Feedback
+未来优先考虑匿名提交，不要求姓名、Email 或 Account；需要回复时再考虑可选联系方式。
 
-所有外部 Feedback 默认视为 Private。
+如果防滥用需要请求来源信息：
 
-即使 Feedback 来源于公开网站，也不会自动公开展示。
-
-Feedback 后续如果需要公开，应通过明确操作进行选择。
-
-初期 Feedback 不要求用户提供：
-
-- 姓名
-- Email
-- Account
-
-优先采用匿名提交。
-
-如果未来需要回复用户，再考虑增加可选联系方式。
-
-## 防滥用数据
-
-为了实现 Rate Limit，可能需要使用请求来源信息。
-
-原则：
-
-- 不为了分析用户而长期保存原始 IP
-- 如需要，可以生成短期 Hash 作为 Rate Limit Key
-- 尽量设置合理的 TTL
-- 不把防滥用数据用于用户画像
+- 不为分析用户而长期保存原始 IP。
+- 必要时使用带合理 TTL 的短期 Hash 作为 Rate Limit Key。
+- 不将防滥用数据用于用户画像。
 
 ## Secrets
 
-以下内容永远不能进入 Git：
+API Token、GitHub App Private Key、Cloudflare Credentials、Database Password、SSH Private Key 等凭证永远不能进入 Git，也不能进入 Dashboard 聚合产物或错误说明。
 
-- API Token
-- GitHub App Private Key
-- Cloudflare Credentials
-- Database Password
-- SSH Private Key
-- 其他 Secret
-
-使用部署平台提供的 Secret / Environment Variable 管理。
-
-## Public / Private Repository
-
-初期只维护一个公开的 Application Repository。
-
-如果以后私人数据本身需要 Git 版本管理，再单独建立 Private Data Repository。
-
-不维护两套独立的 Public / Private Application Code。
+使用部署平台提供的 Secret / Environment Variable 管理凭证。
 
 ## 默认策略
 
-如果无法明确判断某项数据是否适合公开：
-
-> 默认按 Private 处理。
-
-公开应是明确选择，而不是默认行为。
+无法明确判断是否适合公开的数据，默认按 Private 处理。公开应是明确选择，而不是默认行为。
