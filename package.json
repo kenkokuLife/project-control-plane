@@ -12,7 +12,9 @@
     "test:schema": "node --test tests/schema.test.mjs",
     "schema:compare": "node scripts/check-schema-copy.mjs",
     "test:github-status": "node --test src/lib/github-status-reader.test.ts",
-    "test:github-status:smoke": "node --test src/lib/github-status-reader.smoke.ts"
+    "test:github-status:smoke": "node --test src/lib/github-status-reader.smoke.ts",
+    "test:refresh": "node --test src/lib/refresh.test.ts",
+    "test:refresh:smoke": "node --test src/lib/refresh.smoke.ts"
   },
   "dependencies": {
     "yaml": "^2.9.1",

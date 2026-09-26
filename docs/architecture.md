@@ -105,7 +105,7 @@ v1 不新建重复的 `NormalizedProject` 业务模型。每份项目 status v1 
 | `source` | `source.repo`、`source.statusPath`，记录实际读取位置 |
 | `sync` | `sync.state`、`sync.syncedAt`、失败时的 `sync.error` |
 
-Registry 的稳定 ID 用于关联聚合条目；不从仓库名称推导，也不覆盖项目 status 内自行声明的字段。已确认聚合条目采用 `project` + `source` + `sync` 结构。稳定 ID 的外层字段位置、失败时 `project` 的空值表达、完整同步状态枚举及失败时的时间字段语义，在 P3 实现前明确。
+Registry 的稳定 ID 用于关联聚合条目；不从仓库名称推导，也不覆盖项目 status 内自行声明的字段。已确认聚合条目采用 `project` + `source` + `sync` 结构。P3 已明确：稳定 ID 位于 `source.id`；失败条目省略 `project`；`sync.state` 固定为 `ok` / `unavailable` / `unauthorized` / `invalid`；同一轮 refresh 的 `generatedAt` 与所有 `syncedAt` 取同一时间，失败条目同样记录。详见 [Full Refresh](full-refresh.md)。
 
 项目的 `updatedAt` 与 Control Plane 的 `sync.syncedAt` 含义不同，不能用同步时间冒充项目更新时间。
 
@@ -137,7 +137,7 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。未来若
 
 ## 实现里程碑：已确认 v1
 
-按 P1 → P6 推进；P1 已完成，其余为待实现的验收目标。
+按 P1 → P6 推进；P1～P3 已完成，其余为待实现的验收目标。
 
 ### P1 Registry Reader
 
@@ -157,7 +157,7 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。未来若
 
 - 读取所有 enabled 项目，单项目读取或验证失败不阻断其他项目。
 - 输出 `project` + `source` + `sync` 聚合结构，保留失败项目的身份、来源和同步错误。
-- 按本文聚合数据模型补齐尚未确定的字段细节，生成不提交 Git 的临时完整聚合数据。
+- 按本文聚合数据模型补齐尚未确定的字段细节，返回内存中的完整聚合数据；写出不提交 Git 的临时聚合文件留给后续 build 阶段。实现说明见 [Full Refresh](full-refresh.md)。
 
 ### P4 Dashboard
 
