@@ -13,8 +13,20 @@ Dashboard v1 聚合各项目自行维护的状态，帮助快速了解项目进�
 
 ## 当前阶段
 
-v1 设计已确认，P1 Registry Reader、P2 GitHub Status Reader 和 P3 Full Refresh 已完成。P1 支持 Registry v1 读取、验证与默认路径处理；P2 从 public repo 的默认分支读取单个项目状态，并按 canonical v1 schema 验证；P3 并发读取所有 enabled 项目，隔离单项目失败并返回内存中的 `project` + `source` + `sync` 聚合结果。运行与 API 见 [Registry Reader](docs/registry-reader.md)、[GitHub Status Reader](docs/github-status-reader.md) 和 [Full Refresh](docs/full-refresh.md)。尚未实现聚合产物写出、Dashboard 或部署工作流。
+v1 设计已确认，P1 Registry Reader、P2 GitHub Status Reader、P3 Full Refresh 和 P4 Dashboard 已完成。P1 支持 Registry v1 读取、验证与默认路径处理；P2 从 public repo 的默认分支读取单个项目状态，并按 canonical v1 schema 验证；P3 并发读取所有 enabled 项目，隔离单项目失败并返回内存中的 `project` + `source` + `sync` 聚合结果。P4 用 Astro 在 build 时调用 Full Refresh，生成静态 Dashboard（按 Active / Paused / Completed+Archived / Idea 分组，单独展示 Sync Issues）。运行与 API 见 [Registry Reader](docs/registry-reader.md)、[GitHub Status Reader](docs/github-status-reader.md)、[Full Refresh](docs/full-refresh.md) 和 [Dashboard](docs/dashboard.md)。仍未持久化 `projects.json`，未实现部署工作流；PAT 未启用。
 
 已确认采用 Astro + TypeScript、Node/TypeScript、`registry.yaml`、Cloudflare Pages 与 GitHub Actions。构建时完成 Full Refresh，再生成静态 Dashboard；具体运行链路以 Architecture 为准。
 
-下一步可开始 **P4 Dashboard**，随后依次推进 P5 Cloudflare deployment、P6 Sync triggers。P2 直接加载本仓库的正式状态 Schema；真实数据部署的访问边界在 P5 前落实。
+下一步是 **P5 Cloudflare deployment**，随后推进 P6 Sync triggers。P2 直接加载本仓库的正式状态 Schema；真实数据部署的访问边界在 P5 前落实。
+
+## 本地运行
+
+Node / pnpm 版本由 `mise.toml` 声明，无需全局安装：
+
+```sh
+mise install
+mise exec -- pnpm install
+mise exec -- pnpm test
+mise exec -- pnpm build     # build 时对 registry.yaml 执行一次真实 Full Refresh
+mise exec -- pnpm preview
+```

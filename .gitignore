@@ -2,3 +2,5 @@
 node_modules/
 .pnpm-store/
 .pnpm-cache/
+dist/
+.astro/

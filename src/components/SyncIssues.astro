@@ -1,0 +1,79 @@
+---
+import type { DashboardIssue } from '../lib/dashboard.ts';
+import { formatUtc } from '../lib/dashboard.ts';
+
+interface Props {
+  issues: DashboardIssue[];
+}
+
+const { issues } = Astro.props;
+---
+<section class="issues" id="sync-issues" aria-labelledby="sync-issues-title">
+  <h2 id="sync-issues-title">Sync Issues <span class="count">{issues.length}</span></h2>
+  <p class="hint">These Registry projects could not be read in this refresh. No project status is shown for them.</p>
+  <ul>
+    {issues.map(issue => (
+      <li class="issue" id={`issue-${issue.id}`}>
+        <div class="head">
+          <strong>{issue.id}</strong>
+          <span class={`state state-${issue.state}`}>{issue.state}</span>
+          <code>{issue.code}{issue.httpStatus !== null && ` · HTTP ${issue.httpStatus}`}</code>
+        </div>
+        <p class="message">{issue.message}</p>
+        <p class="source">
+          <a href={issue.repoUrl} rel="noopener noreferrer">{issue.repo}</a>
+          <span><code>{issue.statusPath}</code></span>
+          <span>synced <time datetime={issue.syncedAt}>{formatUtc(issue.syncedAt)}</time></span>
+        </p>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .issues {
+    margin-top: 2.5rem;
+    padding: 1rem 1.1rem;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 10px;
+  }
+  h2 {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--warn-text);
+  }
+  .count { font-weight: 400; }
+  .hint { margin: 0.25rem 0 0.5rem; color: var(--muted); font-size: 0.88rem; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  .issue { padding: 0.75rem 0; }
+  .issue + .issue { border-top: 1px solid var(--warn-border); }
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+  }
+  .state { font-weight: 600; font-size: 0.85rem; }
+  .state-unavailable { color: var(--warn-text); }
+  .state-unauthorized, .state-invalid { color: var(--danger-text); }
+  .head code { color: var(--muted); }
+  .message { margin: 0.25rem 0; }
+  .source {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 1rem;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .source a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+</style>

@@ -6,6 +6,9 @@
     "node": ">=22.18.0"
   },
   "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
     "test": "node --test src/lib/*.test.ts tests/schema.test.mjs",
     "typecheck": "tsc --noEmit",
     "test:registry": "node --test src/lib/registry.test.ts",
@@ -14,12 +17,14 @@
     "test:github-status": "node --test src/lib/github-status-reader.test.ts",
     "test:github-status:smoke": "node --test src/lib/github-status-reader.smoke.ts",
     "test:refresh": "node --test src/lib/refresh.test.ts",
-    "test:refresh:smoke": "node --test src/lib/refresh.smoke.ts"
+    "test:refresh:smoke": "node --test src/lib/refresh.smoke.ts",
+    "test:dashboard": "node --test src/lib/dashboard.test.ts"
   },
   "dependencies": {
-    "yaml": "^2.9.1",
     "ajv": "^8.20.0",
-    "ajv-formats": "^3.0.1"
+    "ajv-formats": "^3.0.1",
+    "astro": "^7.3.5",
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@types/node": "^22.20.4",

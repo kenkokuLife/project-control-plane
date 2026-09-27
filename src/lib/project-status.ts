@@ -1,7 +1,8 @@
-import { readFileSync } from 'node:fs';
 import { Ajv2020 } from 'ajv/dist/2020.js';
 import formats from 'ajv-formats';
 import type { ErrorObject } from 'ajv';
+// Static JSON import (not a runtime path lookup) so the schema also resolves inside the Astro/Vite build.
+import schema from '../../schemas/project-status-v1.schema.json' with { type: 'json' };
 
 export interface ProjectStatusV1 {
   schemaVersion: 1;
@@ -34,7 +35,6 @@ export class ProjectStatusValidationError extends Error {
 
 const ajv = new Ajv2020({ allErrors: true, strict: true });
 formats.default(ajv);
-const schema = JSON.parse(readFileSync(new URL('../../schemas/project-status-v1.schema.json', import.meta.url), 'utf8'));
 const validate = ajv.compile<ProjectStatusV1>(schema);
 
 export function parseProjectStatus(source: string): ProjectStatusV1 {

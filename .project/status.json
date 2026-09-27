@@ -6,13 +6,17 @@
   "status": "active",
   "stage": "implementation",
   "current": [
-    "v1 设计已确认；P1 Registry Reader 已完成，包含读取、验证、默认路径处理及禁用项目保留。",
-    "P1 的 52 项测试、TypeScript 类型检查与 git diff --check 通过。",
-    "Project Status v1 canonical Schema 已发布在本仓库；与 Skill 冻结契约完全一致，并具备本地契约测试和副本比较入口。"
+    "P1 Registry Reader 已完成：Registry v1 读取、验证、默认 statusPath 处理及禁用项目保留。",
+    "P2 GitHub Status Reader 已完成：从 public repo default branch 读取状态文件，并按本仓库 canonical v1 Schema 验证。",
+    "P3 Full Refresh 已完成：并发读取所有 enabled 项目，隔离单项目失败，返回内存中的 project + source + sync 聚合结果。",
+    "P4 Astro Dashboard 已完成：按 Active / Paused / Completed+Archived / Idea 分组并单独展示 Sync Issues；P1～P4 与 schema 测试、类型检查和 Astro build 均通过。",
+    "Dashboard 在 build time 调用 Full Refresh，展示真实 public repo 状态；不持久化 projects.json，运行时不请求 GitHub。"
   ],
   "next": [
-    "进入 P2 GitHub Status Reader，直接使用本仓库的 Project Status v1 Schema；当前尚未开始。"
+    "进入 P5 deployment：在 Cloudflare Pages build 中完成 Full Refresh + Astro build 并部署 Dashboard。",
+    "P5 中确定真实 Dashboard 的访问控制与部署方式，遵循 Privacy Model。",
+    "private repo / PAT 暂未启用，接入首个 private repo 时再配置。"
   ],
   "publicUrl": null,
-  "updatedAt": "2026-09-26"
+  "updatedAt": "2026-09-27"
 }

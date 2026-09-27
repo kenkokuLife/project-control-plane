@@ -19,7 +19,7 @@ Skill 负责指导 Agent 使用、迁移和验证契约；其中的 schema 是 A
 - Project Control Plane 维护者负责 canonical schema 与版本演进；Skill 维护者负责同步副本、workflow 文档和验证说明，并在每次 Skill 发布或 Schema 相关修改时运行比较命令，记录所对应的 Control Plane commit。
 - 涉及 Schema 的评审必须检查测试和同步记录，不得通过更新指纹掩盖 v1 契约变更。若比较失败，先调查来源；契约发生变化时走 v2。
 
-本次没有修改 personal-skills。该仓库现有 SKILL.md 仍将其副本称为 canonical，后续需在单独授权的 Skill 文档维护中更新这一措辞；本次已验证两个 Schema 内容相同。这不阻塞本仓库独立进入 P2。
+本次没有修改 personal-skills。该仓库现有 SKILL.md 仍将其副本称为 canonical，后续需在单独授权的 Skill 文档维护中更新这一措辞；本次已验证两个 Schema 内容相同。这不阻塞本仓库后续阶段。
 
 这里没有跨仓库自动同步或后台监控：单仓库测试能发现 canonical v1 改动；副本变化由 Skill 发布/修改时显式执行比较发现。
 

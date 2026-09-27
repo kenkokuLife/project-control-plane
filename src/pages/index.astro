@@ -1,0 +1,158 @@
+---
+// Build time only: run Full Refresh (P3) once and render its in-memory result.
+// Nothing is written to disk and the page makes no requests to GitHub at runtime.
+import ProjectItem from '../components/ProjectItem.astro';
+import SyncIssues from '../components/SyncIssues.astro';
+import { buildDashboard, formatUtc } from '../lib/dashboard.ts';
+import { refreshProjects } from '../lib/refresh.ts';
+
+const view = buildDashboard(await refreshProjects());
+const { counts } = view;
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Project Control Plane</title>
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>Project Control Plane</h1>
+      <p class="meta">
+        {plural(counts.total, 'project')}
+        {counts.issues > 0 && (
+          <> · <a class="issue-link" href="#sync-issues">{plural(counts.issues, 'sync issue')}</a></>
+        )}
+        {' '}· generated <time datetime={view.generatedAt}>{formatUtc(view.generatedAt)}</time>
+      </p>
+    </header>
+
+    <main>
+      {counts.total === 0 && (
+        <p class="empty">No enabled projects in <code>registry.yaml</code>.</p>
+      )}
+      {counts.total > 0 && counts.ok === 0 && (
+        <p class="empty">No project status could be read. See Sync Issues below.</p>
+      )}
+
+      {view.groups.map(group => (
+        <section class="group" aria-labelledby={`group-${group.key}`}>
+          <h2 id={`group-${group.key}`}>
+            {group.title} <span class="count">{group.projects.length}</span>
+          </h2>
+          <div class="grid">
+            {group.projects.map(project => <ProjectItem project={project} />)}
+          </div>
+        </section>
+      ))}
+
+      {view.issues.length > 0 && <SyncIssues issues={view.issues} />}
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --bg: #fafaf9;
+    --surface: #ffffff;
+    --text: #1c1917;
+    --muted: #6b6560;
+    --border: #e7e5e4;
+    --accent: #2563eb;
+    --warn-bg: #fffbeb;
+    --warn-border: #f5d27a;
+    --warn-text: #92400e;
+    --danger-text: #b91c1c;
+    --badge-active: #dcfce7; --badge-active-text: #166534;
+    --badge-paused: #fef3c7; --badge-paused-text: #92400e;
+    --badge-completed: #dbeafe; --badge-completed-text: #1e40af;
+    --badge-archived: #e7e5e4; --badge-archived-text: #44403c;
+    --badge-idea: #f3e8ff; --badge-idea-text: #6b21a8;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141312;
+      --surface: #1c1b1a;
+      --text: #e7e5e4;
+      --muted: #a8a29e;
+      --border: #33302e;
+      --accent: #7aa7ff;
+      --warn-bg: #2a2110;
+      --warn-border: #6b4f16;
+      --warn-text: #fbbf6b;
+      --danger-text: #f87171;
+      --badge-active: #14331f; --badge-active-text: #86efac;
+      --badge-paused: #3a2c0c; --badge-paused-text: #fcd34d;
+      --badge-completed: #172554; --badge-completed-text: #93c5fd;
+      --badge-archived: #2e2b29; --badge-archived-text: #d6d3d1;
+      --badge-idea: #2e1a47; --badge-idea-text: #d8b4fe;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0 auto;
+    max-width: 72rem;
+    padding: 1.5rem 1rem 3rem;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.55 system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+    overflow-wrap: anywhere;
+  }
+  a { color: var(--accent); }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
+  h1, h2, h3 { line-height: 1.25; }
+  .badge {
+    display: inline-block;
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-active { background: var(--badge-active); color: var(--badge-active-text); }
+  .badge-paused { background: var(--badge-paused); color: var(--badge-paused-text); }
+  .badge-completed { background: var(--badge-completed); color: var(--badge-completed-text); }
+  .badge-archived { background: var(--badge-archived); color: var(--badge-archived-text); }
+  .badge-idea { background: var(--badge-idea); color: var(--badge-idea-text); }
+</style>
+
+<style>
+  .page-header { margin-bottom: 1.5rem; }
+  h1 { margin: 0; font-size: 1.35rem; }
+  .meta { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.9rem; }
+  .issue-link {
+    /* Larger touch target without changing line height. */
+    display: inline-block;
+    padding: 0.75rem 0;
+    margin: -0.75rem 0;
+    color: var(--warn-text);
+    font-weight: 600;
+  }
+  .empty {
+    padding: 1rem;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+  }
+  .group { margin-top: 2rem; }
+  .group h2 {
+    margin: 0 0 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .count { font-weight: 400; }
+  .grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  }
+</style>

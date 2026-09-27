@@ -1,0 +1,10 @@
+[tools]
+node = "24.21.0"
+pnpm = "11.25.0"
+
+[env]
+# Keep pnpm's store and metadata cache inside the repo (both gitignored).
+pnpm_config_store_dir = "{{config_root}}/.pnpm-store"
+pnpm_config_cache_dir = "{{config_root}}/.pnpm-cache"
+# Astro CLI telemetry would otherwise write to user-level preferences.
+ASTRO_TELEMETRY_DISABLED = "1"

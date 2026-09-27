@@ -1,6 +1,6 @@
 # Architecture
 
-本文记录已确认的 v1 技术设计；P1 Registry Reader 已实现，P2～P6 尚未实现。产品范围及 future roadmap 见 [Vision](vision.md)，数据公开边界见 [Privacy Model](privacy-model.md)。
+本文记录已确认的 v1 技术设计；P1～P4 已实现，P5～P6 尚未实现。产品范围及 future roadmap 见 [Vision](vision.md)，数据公开边界见 [Privacy Model](privacy-model.md)。
 
 ## 技术栈：已确认 v1
 
@@ -137,7 +137,7 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。未来若
 
 ## 实现里程碑：已确认 v1
 
-按 P1 → P6 推进；P1～P3 已完成，其余为待实现的验收目标。
+按 P1 → P6 推进；P1～P4 已完成，其余为待实现的验收目标。
 
 ### P1 Registry Reader
 
@@ -151,7 +151,7 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。未来若
 - 从真实 public repo 的 default branch 读取 `.project/status.json`，支持 Registry 的路径覆盖。
 - 接入 project status validation，验证 `schemaVersion: 1` 和 status v1 契约。
 - 暂不处理 private repo PAT；真正接入首个 private repo 时再按本文认证方案配置。
-- 直接加载本仓库 `schemas/project-status-v1.schema.json`；验证运行时使用 Node/TypeScript，并启用 date/uri 格式校验。P2 验证实现尚未开始。
+- 直接加载本仓库 `schemas/project-status-v1.schema.json`；验证运行时使用 Node/TypeScript，并启用 date/uri 格式校验。
 
 ### P3 Full Refresh
 
@@ -165,6 +165,7 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。未来若
 - 按 Active / Paused / Completed+Archived / Idea 轻量分组，Completed 与 Archived 合并展示。
 - 同步失败项目不能消失；缺失业务状态时仍展示可用身份、来源和错误，不能因无法分组而过滤掉。
 - 页面消费构建时聚合数据，不实时请求所有 GitHub repo。展示含义见 [Vision](vision.md)。
+- 已实现：Astro 页面在 build 时直接调用 `refreshProjects()`，结果只在内存中经 `buildDashboard()` view-model 渲染为静态 HTML；P4 尚未写出 `projects.json`，写出临时聚合文件（若需要）随 P5 build 链路确定。实现说明见 [Dashboard](dashboard.md)。
 
 ### P5 Cloudflare deployment
 

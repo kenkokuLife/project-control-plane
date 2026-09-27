@@ -1,6 +1,6 @@
 # P1 Registry Reader
 
-P1 已实现本地 Registry v1 的读取、解析、验证和默认值处理。使用 Node + TypeScript；Astro 页面及其依赖留到 Dashboard 阶段，不包含同步或网络请求。
+P1 已实现本地 Registry v1 的读取、解析、验证和默认值处理。使用 Node + TypeScript；Registry Reader 本身不包含同步或网络请求（Dashboard 见 [Dashboard](dashboard.md)）。
 
 ## 运行
 
