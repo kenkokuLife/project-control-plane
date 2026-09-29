@@ -9,15 +9,16 @@
     "P1 Registry Reader 已完成：Registry v1 读取、验证、默认 statusPath 处理及禁用项目保留。",
     "P2 GitHub Status Reader 已完成：从 public repo default branch 读取状态文件，并按本仓库 canonical v1 Schema 验证。",
     "P3 Full Refresh 已完成：并发读取所有 enabled 项目，隔离单项目失败，返回内存中的 project + source + sync 聚合结果。",
-    "P4 Astro Dashboard 已完成：按 Active / Paused / Completed+Archived / Idea 分组并单独展示 Sync Issues。",
-    "P5 Cloudflare deployment 已完成：Cloudflare Pages 连接 GitHub main 并自动 build / deploy，production pages.dev 已部署成功；生产和预览 hostname 均受 Cloudflare Access 保护，仅允许项目所有者邮箱访问。",
-    "P6 repository implementation 已完成：每日与手动 rebuild workflow、其他项目状态变更接入模板、文档和静态测试均已写入仓库；Cloudflare Pages Deploy Hook 已绑定 main，本仓库 GitHub Secret CONTROL_PLANE_DEPLOY_HOOK 已配置。",
+    "P4 Dashboard 已完成：按 Active / Paused / Completed+Archived / Idea 分组并单独展示 Sync Issues。",
+    "P5 Cloudflare Pages + Access 已完成：Cloudflare Pages 连接 GitHub main 并自动 build / deploy；生产和预览 hostname 均受 Cloudflare Access 保护，仅允许项目所有者邮箱访问。",
+    "P6 automatic rebuild 已完成：每日与手动 rebuild workflow、其他项目状态变更接入模板及 Cloudflare Pages Deploy Hook 均已就绪。",
     "Dashboard 在 build time 调用 Full Refresh，读取 public GitHub repo 并生成静态页面；不持久化 projects.json，运行时不请求 GitHub。",
-    "第一个外部项目 goodidea-agent 已登记，等待其 onboarding push 完成真实联调。"
+    "真实跨项目 E2E 已完成：forge-context/goodidea-agent 的 .project/status.json push → GitHub Action → Cloudflare Deploy Hook → Pages rebuild → Dashboard 显示 GoodIdea Public Experience / Sync ok。"
   ],
   "next": [
-    "真实联调：在 GitHub Actions 手动触发一次 Control Plane rebuild，检查 Cloudflare Pages 部署和 Dashboard 同步结果。",
-    "真实联调：选择一个已纳入 Registry 的 public 项目，安装状态变更 workflow 并配置同名 Secret，验证 status.json 变化能触发 Dashboard 更新。"
+    "批量接入其他 public projects。",
+    "首次需要接入 private repo 时，再设计并启用 PAT 或 GitHub App。",
+    "根据实际使用反馈，再决定是否进入 v2、persistent snapshots 或 incremental refresh。"
   ],
   "publicUrl": null,
   "updatedAt": "2026-09-29"

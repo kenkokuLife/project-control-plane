@@ -2,15 +2,14 @@
 
 ## Current State
 
-- v1 设计已确认并写入 README 与 docs/；P1～P5 已完成，P6 repository implementation 已完成，真实联调待进行。
+- Project Control Plane v1 已完成：P1～P6 均已交付，真实跨项目 E2E 已通过。
 - P1 Registry Reader：读取、验证 Registry v1，处理默认 `statusPath`，保留禁用项目。见 `docs/registry-reader.md`。
 - P2 GitHub Status Reader：从 public repo default branch 读取状态文件，按本仓库 canonical Schema 验证。见 `docs/github-status-reader.md`。
 - P3 Full Refresh：`refreshProjects()` 并发读取所有 enabled 项目，隔离单项目失败，返回内存中的 `project` + `source` + `sync` 聚合结果。见 `docs/full-refresh.md`。
 - P4 Dashboard：Astro 静态页面在 build time 调用 `refreshProjects()`，经 `buildDashboard()` view-model 渲染；按 Active / Paused / Completed+Archived / Idea 分组，单独展示 Sync Issues。见 `docs/dashboard.md`。
-- 第一个外部项目 `goodidea-agent` 已登记，等待其 onboarding push 完成真实联调；目前远端 `main` 尚无 `.project/status.json`。
-- P5 Cloudflare deployment：Cloudflare Pages 已连接本仓库 GitHub `main`，使用 Astro preset、`pnpm build`、`dist` 和仓库根目录；生产 `pages.dev` 已部署成功。生产 hostname 与 preview wildcard hostname 均由 Cloudflare Access 保护，仅允许项目所有者邮箱访问。见 `docs/cloudflare-pages.md`。
-- P6 automatic rebuild：每日 scheduled / 手动 workflow、供其他项目复制的状态变更模板、文档和静态测试已实现。Cloudflare Pages Deploy Hook 已绑定 `main`；本仓库 GitHub repository secret `CONTROL_PLANE_DEPLOY_HOOK` 已配置。尚未调用真实 Hook 验证；见 `docs/automatic-rebuild.md`。
-- 测试：`pnpm test`（含 P6 workflow 静态测试，183 项）和 `pnpm typecheck` 均通过；P5 的 `pnpm build` 已验证。
+- P5 Cloudflare Pages + Access：Cloudflare Pages 已连接本仓库 GitHub `main`，使用 Astro preset、`pnpm build`、`dist` 和仓库根目录；生产 `pages.dev` 已部署成功。生产 hostname 与 preview wildcard hostname 均由 Cloudflare Access 保护，仅允许项目所有者邮箱访问。见 `docs/cloudflare-pages.md`。
+- P6 automatic rebuild：每日 scheduled / 手动 workflow、供其他项目复制的状态变更模板、文档和静态测试已实现。Cloudflare Pages Deploy Hook 已绑定 `main`；本仓库 GitHub repository secret `CONTROL_PLANE_DEPLOY_HOOK` 已配置。见 `docs/automatic-rebuild.md`。
+- 真实跨项目 E2E 已完成：`forge-context/goodidea-agent` 的 `.project/status.json` push → GitHub Action → Cloudflare Deploy Hook → Pages rebuild → Dashboard 显示 **GoodIdea Public Experience / Sync ok**。
 - 状态内容更新时间为 2026-09-29（UTC）；状态契约为 `schemaVersion: 1`。Feedback Inbox 与 Ideas 属于 future。
 
 ## Decisions
@@ -28,8 +27,9 @@
 
 ## Next
 
-1. 真实联调：在 GitHub Actions 手动触发一次 Control Plane rebuild，确认 Cloudflare Pages 部署完成，并检查 Dashboard 同步结果。
-2. 真实联调：选择一个已纳入 Registry 的 public 项目，安装状态变更 workflow、配置同名 GitHub Secret，验证 `.project/status.json` 变化能触发 Dashboard 更新。
+1. 批量接入其他 public projects。
+2. 首次需要接入 private repo 时，再设计并启用 PAT 或 GitHub App。
+3. 根据实际使用反馈，再决定是否进入 v2、persistent snapshots 或 incremental refresh。
 
 ## Known Issues
 
@@ -37,4 +37,4 @@
 - 每次 build 对每个项目约发 2 次未认证 GitHub API 请求（匿名限额 60 次/小时），当前项目数量下不是问题。
 - `.astro` 组件不在 `tsc` 检查范围内（未引入 `@astrojs/check`）；页面逻辑集中在已检查的 `src/lib/dashboard.ts`。
 - `publicUrl` 保持 `null`：Dashboard 受 Access 保护，不将生产地址作为公开项目 URL 声明。
-- 当前不接入 private repo，也不配置 PAT；这不影响 P6 联调。
+- 当前不接入 private repo，也不配置 PAT；首次有实际需求时再设计鉴权方案。
