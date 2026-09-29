@@ -4,7 +4,7 @@ P4 用 Astro 生成一个静态 Dashboard。build 时调用一次 P3 `refreshPro
 
 ## 运行环境
 
-Node 与 pnpm 由仓库根目录的 `mise.toml` 声明（node 24.21.0、pnpm 11.25.0），不依赖 shell 中全局可用的 node / pnpm，也不修改 shell 配置：
+Node 与 pnpm 在 `package.json` 声明（node 24.21.0、pnpm 11.25.0）；本地可用 `mise.toml` 安装和运行，不修改 shell 配置：
 
 ```sh
 mise install          # 首次：安装 mise.toml 声明的版本
@@ -63,5 +63,5 @@ mise exec -- pnpm preview          # 本地预览 dist/
 ## 范围与后续
 
 - P4 仍没有持久化的 `projects.json`；聚合结果只在 build 进程内存中。
-- Cloudflare Pages 部署及真实数据访问边界属于 P5；事件触发与每日 reconciliation 属于 P6。
+- P5 已完成：Dashboard 通过 Cloudflare Pages 的 GitHub 集成部署，生产和预览 hostname 由 Cloudflare Access 保护，见 [P5 Cloudflare deployment](cloudflare-pages.md)。P6 将实现其他项目变化触发 rebuild，并增加每日一次 full reconciliation / rebuild。
 - PAT / private repo 仍未启用。

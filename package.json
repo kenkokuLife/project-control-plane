@@ -2,8 +2,9 @@
   "name": "project-control-plane",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.25.0",
   "engines": {
-    "node": ">=22.18.0"
+    "node": "24.21.0"
   },
   "scripts": {
     "dev": "astro dev",

@@ -24,7 +24,7 @@
 
 不能仅凭字段名称把项目名称、状态、阶段、下一步或更新时间认定为适合公开。真实数据如需公开，应经过明确选择；示例数据应与真实运行数据分开。
 
-私人运行数据不进入公开 Git 仓库。聚合产物即使未提交 Git，也必须在构建、部署和交付时保持这一边界。v1 的“无登录系统”不意味着部署为公开可访问的真实数据 Dashboard；部署平台已确认为 Cloudflare Pages，具体私有访问控制方式仍需在部署真实数据前确定（P5）；选择部署平台不改变上述隐私边界。
+私人运行数据不进入公开 Git 仓库。聚合产物即使未提交 Git，也必须在构建、部署和交付时保持这一边界。Dashboard 的 `noindex, nofollow` 只是搜索引擎提示，不是访问控制。P5 已在 Cloudflare Pages 部署，生产 `pages.dev` hostname 与 preview wildcard hostname 均由 Cloudflare Access 保护；当前策略仅允许项目所有者邮箱访问。新增部署 hostname 时仍须核对 Access 覆盖范围，不能在未保护的公开地址暴露真实项目数据。
 
 如未来私人数据确实需要 Git 版本管理，可以考虑独立的 Private Data Repository；这不是 v1 要求，也不需要维护两套应用代码。
 

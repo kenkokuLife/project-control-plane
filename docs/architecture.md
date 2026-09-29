@@ -1,6 +1,6 @@
 # Architecture
 
-本文记录已确认的 v1 技术设计；P1～P4 已实现，P5～P6 尚未实现。产品范围及 future roadmap 见 [Vision](vision.md)，数据公开边界见 [Privacy Model](privacy-model.md)。
+本文记录已确认的 v1 技术设计；P1～P5 已完成，P6 尚未实现。产品范围及 future roadmap 见 [Vision](vision.md)，数据公开边界见 [Privacy Model](privacy-model.md)。
 
 ## 技术栈：已确认 v1
 
@@ -8,7 +8,7 @@
 - **Node/TypeScript**：负责 Registry 读取、GitHub API 访问、project status validation 与 Full Refresh。
 - **`registry.yaml`**：项目清单；字段约定见下文 Registry v1。
 - **Cloudflare Pages**：执行构建并部署 Dashboard。
-- **GitHub Actions**：负责项目事件触发与每日一次的全量 reconciliation 兜底。
+- **GitHub 集成**：Control Plane 的 `main` 更新后由 Cloudflare Pages 自动 build / deploy。其他项目变化如何触发 rebuild 留给 P6。
 
 v1 不使用数据库、Docker、Python runtime 或复杂状态管理。下文 P1～P6 是实现顺序，不代表功能已经完成。
 
@@ -65,28 +65,27 @@ Public repository 可直接读取。Private repository 经统一认证层读取�
 
 ## 同步触发与 Full Refresh
 
-v1 使用事件触发刷新，加上 Control Plane 自己每天一次的全量 reconciliation 兜底，以处理事件丢失、项目 workflow 关闭等情况。事件可以来自：
+P6 将实现其他项目状态变化触发 Control Plane rebuild，并增加每日一次 full reconciliation / rebuild 兜底。具体触发入口留在 P6 确定。可能的事件来源包括：
 
 - `status.json` 变化
 - 主分支部署成功
 - 手动 workflow dispatch
 
-项目状态或其他重要变化通过 GitHub Actions / `repository_dispatch` / Cloudflare Pages deploy hook 触发 Project Control Plane rebuild。GitHub Actions 同时负责每日一次的 full reconciliation。具体 workflow 与 hook 接线在 P6 实现，所有入口均触发同一构建链路。
+P5 已使用 Cloudflare Pages 与本仓库 GitHub `main` 的直接集成；`main` 更新自动 build / deploy。其他项目的变化不会因此自动触发本仓库构建，其触发与每日 reconciliation 留给 P6 实现。
 
 所有刷新入口采用相同的 Full Refresh 流程：
 
 ```text
-项目重要变化 / 手动触发 / GitHub Actions 每日 reconciliation
+本仓库 main 更新（P5）；其他项目变化的触发方式留给 P6
     ↓
-GitHub Actions / repository_dispatch / deploy hook 触发 rebuild
+Cloudflare Pages GitHub integration 启动 build
     ↓
-Cloudflare Pages build：
+pnpm build → Astro build → 构建时调用 refreshProjects()：
     读取 registry.yaml，筛选所有 enabled 项目
     → 从 GitHub 读取各项目 .project/status.json（或 statusPath 覆盖路径）
     → 验证 status v1（schemaVersion: 1），隔离单项目失败
     → Full Refresh 聚合 project + source + sync
-    → 生成临时聚合数据（例如 data/projects.json）
-    → Astro build
+    → 将内存结果渲染成 dist/ 静态 Dashboard
     ↓
 Cloudflare Pages 部署 Dashboard
 ```
@@ -119,11 +118,9 @@ Registry 的稳定 ID 用于关联聚合条目；不从仓库名称推导，也�
 
 ## 存储与构建产物
 
-v1 不使用数据库。每次同步 / build 临时生成完整聚合数据，例如 `data/projects.json`，再用于 Dashboard 构建。
+v1 不使用数据库。每次 build 在内存中生成完整聚合数据，由 Astro 直接渲染到 `dist/`；不写 `projects.json`，也不把生成的页面提交 Git。
 
-聚合文件是缓存 / 构建产物，不是 Source of Truth，不提交进 Git。实现时应确保该产物不纳入版本控制；本文不创建产物或修改仓库忽略配置。
-
-v1 不实现 per-project persistent snapshot 或 incremental refresh。未来若引入这些优化，仍保留每日全量 reconciliation；每日兜底本身已属于 v1。
+v1 不实现 per-project persistent snapshot 或 incremental refresh。其他项目变化触发与每日 full reconciliation / rebuild 的具体方案在 P6 确定。
 
 ## 模块职责：已确认 v1
 
@@ -137,7 +134,7 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。未来若
 
 ## 实现里程碑：已确认 v1
 
-按 P1 → P6 推进；P1～P4 已完成，其余为待实现的验收目标。
+按 P1 → P6 推进；P1～P5 已完成，P6 为待实现的验收目标。
 
 ### P1 Registry Reader
 
@@ -157,7 +154,7 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。未来若
 
 - 读取所有 enabled 项目，单项目读取或验证失败不阻断其他项目。
 - 输出 `project` + `source` + `sync` 聚合结构，保留失败项目的身份、来源和同步错误。
-- 按本文聚合数据模型补齐尚未确定的字段细节，返回内存中的完整聚合数据；写出不提交 Git 的临时聚合文件留给后续 build 阶段。实现说明见 [Full Refresh](full-refresh.md)。
+- 按本文聚合数据模型返回内存中的完整聚合数据，不写临时聚合文件。实现说明见 [Full Refresh](full-refresh.md)。
 
 ### P4 Dashboard
 
@@ -165,15 +162,15 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。未来若
 - 按 Active / Paused / Completed+Archived / Idea 轻量分组，Completed 与 Archived 合并展示。
 - 同步失败项目不能消失；缺失业务状态时仍展示可用身份、来源和错误，不能因无法分组而过滤掉。
 - 页面消费构建时聚合数据，不实时请求所有 GitHub repo。展示含义见 [Vision](vision.md)。
-- 已实现：Astro 页面在 build 时直接调用 `refreshProjects()`，结果只在内存中经 `buildDashboard()` view-model 渲染为静态 HTML；P4 尚未写出 `projects.json`，写出临时聚合文件（若需要）随 P5 build 链路确定。实现说明见 [Dashboard](dashboard.md)。
+- 已实现：Astro 页面在 build 时直接调用 `refreshProjects()`，结果只在内存中经 `buildDashboard()` view-model 渲染为静态 HTML，不写 `projects.json`。实现说明见 [Dashboard](dashboard.md)。
 
 ### P5 Cloudflare deployment
 
-- 在 Cloudflare Pages build 中依次完成 Full Refresh + Astro build，并部署 Dashboard。
-- 临时聚合文件不进入 Git；部署真实个人数据前落实符合 [Privacy Model](privacy-model.md) 的访问边界。
+- 已完成：Cloudflare Pages 连接本仓库 GitHub `main`，生产 `pages.dev` 部署成功，后续 `main` 更新自动 build / deploy。构建与版本设置见 [Cloudflare Pages deployment](cloudflare-pages.md)。
+- 生产 hostname 与 preview wildcard hostname 均受 Cloudflare Access 保护，策略仅允许项目所有者邮箱访问，遵循 [Privacy Model](privacy-model.md)。当前只读 public repo；PAT 未配置。
 
 ### P6 Sync triggers
 
-- 项目重要变化通过 GitHub Actions / `repository_dispatch` / deploy hook 触发 rebuild。
-- GitHub Actions 每日执行一次 full reconciliation，作为事件触发的兜底。
-- 所有触发入口复用相同构建链路，保证 Full Refresh 幂等，重复事件不产生重复项目或累计业务副作用。
+- 实现其他项目状态变化触发 Control Plane rebuild。
+- 增加每日一次 full reconciliation / rebuild 兜底。
+- 后续触发入口复用相同构建链路，保证 Full Refresh 幂等，重复事件不产生重复项目或累计业务副作用。

@@ -91,7 +91,7 @@ Registry Reader 仍解析并保留 `enabled: false` 项目；Full Refresh 在读
 
 ## 范围与后续
 
-- 聚合结果只存在于内存，不持久化。写出 `projects.json` 等构建产物属于后续 build / deployment 阶段（P4 / P5）。
+- 聚合结果只存在于内存，不持久化；P4 / P5 build 不写出 `projects.json`。
 - 不实现 Cloudflare、GitHub Actions / `repository_dispatch`。P4 Dashboard 在 build 时直接调用 `refreshProjects()`，见 [Dashboard](dashboard.md)。
 - private repo PAT 仍未启用；当前只读 public repo，默认 `GitHubClient` 不带 token。
 

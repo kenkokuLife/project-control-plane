@@ -9,14 +9,15 @@
     "P1 Registry Reader 已完成：Registry v1 读取、验证、默认 statusPath 处理及禁用项目保留。",
     "P2 GitHub Status Reader 已完成：从 public repo default branch 读取状态文件，并按本仓库 canonical v1 Schema 验证。",
     "P3 Full Refresh 已完成：并发读取所有 enabled 项目，隔离单项目失败，返回内存中的 project + source + sync 聚合结果。",
-    "P4 Astro Dashboard 已完成：按 Active / Paused / Completed+Archived / Idea 分组并单独展示 Sync Issues；P1～P4 与 schema 测试、类型检查和 Astro build 均通过。",
-    "Dashboard 在 build time 调用 Full Refresh，展示真实 public repo 状态；不持久化 projects.json，运行时不请求 GitHub。"
+    "P4 Astro Dashboard 已完成：按 Active / Paused / Completed+Archived / Idea 分组并单独展示 Sync Issues。",
+    "P5 Cloudflare deployment 已完成：Cloudflare Pages 连接 GitHub main 并自动 build / deploy，production pages.dev 已部署成功；生产和预览 hostname 均受 Cloudflare Access 保护，仅允许项目所有者邮箱访问。",
+    "Dashboard 在 build time 调用 Full Refresh，读取 public GitHub repo 并生成静态页面；不持久化 projects.json，运行时不请求 GitHub。"
   ],
   "next": [
-    "进入 P5 deployment：在 Cloudflare Pages build 中完成 Full Refresh + Astro build 并部署 Dashboard。",
-    "P5 中确定真实 Dashboard 的访问控制与部署方式，遵循 Privacy Model。",
-    "private repo / PAT 暂未启用，接入首个 private repo 时再配置。"
+    "P6：实现其他项目状态变化触发 Project Control Plane rebuild。",
+    "P6：增加每日一次 full reconciliation / rebuild 兜底。",
+    "private repo / PAT 仍留到首次接入 private repo 时配置。"
   ],
   "publicUrl": null,
-  "updatedAt": "2026-09-27"
+  "updatedAt": "2026-09-29"
 }
