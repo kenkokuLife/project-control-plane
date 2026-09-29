@@ -6,7 +6,8 @@
 - P1 Registry Reader：读取、验证 Registry v1，处理默认 `statusPath`，保留禁用项目。见 `docs/registry-reader.md`。
 - P2 GitHub Status Reader：从 public repo default branch 读取状态文件，按本仓库 canonical Schema 验证。见 `docs/github-status-reader.md`。
 - P3 Full Refresh：`refreshProjects()` 并发读取所有 enabled 项目，隔离单项目失败，返回内存中的 `project` + `source` + `sync` 聚合结果。见 `docs/full-refresh.md`。
-- P4 Dashboard：Astro 静态页面在 build time 调用 `refreshProjects()`，经 `buildDashboard()` view-model 渲染；按 Active / Paused / Completed+Archived / Idea 分组，单独展示 Sync Issues。当前真实数据为本仓库（public），显示 sync ok。见 `docs/dashboard.md`。
+- P4 Dashboard：Astro 静态页面在 build time 调用 `refreshProjects()`，经 `buildDashboard()` view-model 渲染；按 Active / Paused / Completed+Archived / Idea 分组，单独展示 Sync Issues。见 `docs/dashboard.md`。
+- 第一个外部项目 `goodidea-agent` 已登记，等待其 onboarding push 完成真实联调；目前远端 `main` 尚无 `.project/status.json`。
 - P5 Cloudflare deployment：Cloudflare Pages 已连接本仓库 GitHub `main`，使用 Astro preset、`pnpm build`、`dist` 和仓库根目录；生产 `pages.dev` 已部署成功。生产 hostname 与 preview wildcard hostname 均由 Cloudflare Access 保护，仅允许项目所有者邮箱访问。见 `docs/cloudflare-pages.md`。
 - P6 automatic rebuild：每日 scheduled / 手动 workflow、供其他项目复制的状态变更模板、文档和静态测试已实现。Cloudflare Pages Deploy Hook 已绑定 `main`；本仓库 GitHub repository secret `CONTROL_PLANE_DEPLOY_HOOK` 已配置。尚未调用真实 Hook 验证；见 `docs/automatic-rebuild.md`。
 - 测试：`pnpm test`（含 P6 workflow 静态测试，183 项）和 `pnpm typecheck` 均通过；P5 的 `pnpm build` 已验证。

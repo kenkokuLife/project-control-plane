@@ -3,3 +3,6 @@ projects:
   - id: project-control-plane
     repo: kenkokuLife/project-control-plane
     enabled: true
+  - id: goodidea-agent
+    repo: forge-context/goodidea-agent
+    enabled: true

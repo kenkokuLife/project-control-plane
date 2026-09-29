@@ -11,7 +11,10 @@ const registry = (entry: unknown = project) => JSON.stringify({ version: 1, proj
 test('reads the repository registry and supplies the default statusPath', async () => {
   assert.deepEqual(await readRegistry(root), {
     version: 1,
-    projects: [{ id: 'project-control-plane', repo: 'kenkokuLife/project-control-plane', enabled: true, statusPath: '.project/status.json' }],
+    projects: [
+      { id: 'project-control-plane', repo: 'kenkokuLife/project-control-plane', enabled: true, statusPath: '.project/status.json' },
+      { id: 'goodidea-agent', repo: 'forge-context/goodidea-agent', enabled: true, statusPath: '.project/status.json' },
+    ],
   });
   assert.deepEqual(await readRegistry(), await readRegistry(root));
 });

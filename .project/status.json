@@ -12,7 +12,8 @@
     "P4 Astro Dashboard 已完成：按 Active / Paused / Completed+Archived / Idea 分组并单独展示 Sync Issues。",
     "P5 Cloudflare deployment 已完成：Cloudflare Pages 连接 GitHub main 并自动 build / deploy，production pages.dev 已部署成功；生产和预览 hostname 均受 Cloudflare Access 保护，仅允许项目所有者邮箱访问。",
     "P6 repository implementation 已完成：每日与手动 rebuild workflow、其他项目状态变更接入模板、文档和静态测试均已写入仓库；Cloudflare Pages Deploy Hook 已绑定 main，本仓库 GitHub Secret CONTROL_PLANE_DEPLOY_HOOK 已配置。",
-    "Dashboard 在 build time 调用 Full Refresh，读取 public GitHub repo 并生成静态页面；不持久化 projects.json，运行时不请求 GitHub。"
+    "Dashboard 在 build time 调用 Full Refresh，读取 public GitHub repo 并生成静态页面；不持久化 projects.json，运行时不请求 GitHub。",
+    "第一个外部项目 goodidea-agent 已登记，等待其 onboarding push 完成真实联调。"
   ],
   "next": [
     "真实联调：在 GitHub Actions 手动触发一次 Control Plane rebuild，检查 Cloudflare Pages 部署和 Dashboard 同步结果。",
