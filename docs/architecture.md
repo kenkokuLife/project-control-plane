@@ -1,6 +1,6 @@
 # Architecture
 
-本文记录已确认的 v1 技术设计；P1～P5 已完成，P6 尚未实现。产品范围及 future roadmap 见 [Vision](vision.md)，数据公开边界见 [Privacy Model](privacy-model.md)。
+本文记录已确认的 v1 技术设计；P1～P5 已完成，P6 repository implementation 已完成，Deploy Hook 和本仓库 GitHub Secret 已配置，待真实联调。产品范围及 future roadmap 见 [Vision](vision.md)，数据公开边界见 [Privacy Model](privacy-model.md)。
 
 ## 技术栈：已确认 v1
 
@@ -8,7 +8,7 @@
 - **Node/TypeScript**：负责 Registry 读取、GitHub API 访问、project status validation 与 Full Refresh。
 - **`registry.yaml`**：项目清单；字段约定见下文 Registry v1。
 - **Cloudflare Pages**：执行构建并部署 Dashboard。
-- **GitHub 集成**：Control Plane 的 `main` 更新后由 Cloudflare Pages 自动 build / deploy。其他项目变化如何触发 rebuild 留给 P6。
+- **GitHub 集成与 Deploy Hook**：Control Plane 的 `main` 更新后由 Cloudflare Pages 自动 build / deploy；其他项目的状态变化及每日定时任务通过 Pages Deploy Hook 触发构建。
 
 v1 不使用数据库、Docker、Python runtime 或复杂状态管理。下文 P1～P6 是实现顺序，不代表功能已经完成。
 
@@ -65,20 +65,14 @@ Public repository 可直接读取。Private repository 经统一认证层读取�
 
 ## 同步触发与 Full Refresh
 
-P6 将实现其他项目状态变化触发 Control Plane rebuild，并增加每日一次 full reconciliation / rebuild 兜底。具体触发入口留在 P6 确定。可能的事件来源包括：
-
-- `status.json` 变化
-- 主分支部署成功
-- 手动 workflow dispatch
-
-P5 已使用 Cloudflare Pages 与本仓库 GitHub `main` 的直接集成；`main` 更新自动 build / deploy。其他项目的变化不会因此自动触发本仓库构建，其触发与每日 reconciliation 留给 P6 实现。
+P5 已使用 Cloudflare Pages 与本仓库 GitHub `main` 的直接集成；`main` 更新自动 build / deploy。P6 为其他项目提供 workflow 模板：push 到 `main` 且 `.project/status.json` 变化时，POST Pages Deploy Hook。本仓库另有每日 00:17 UTC 的 scheduled workflow，并支持手动 `workflow_dispatch`，调用同一个 Hook。Hook 与本仓库 GitHub Secret 已配置，真实联调待进行；详见 [P6 自动刷新触发](automatic-rebuild.md)。
 
 所有刷新入口采用相同的 Full Refresh 流程：
 
 ```text
-本仓库 main 更新（P5）；其他项目变化的触发方式留给 P6
+本仓库 main 更新（P5 GitHub 集成）；其他项目状态变化 / 每日定时 / 手动触发（P6 Deploy Hook）
     ↓
-Cloudflare Pages GitHub integration 启动 build
+Cloudflare Pages 启动 main build
     ↓
 pnpm build → Astro build → 构建时调用 refreshProjects()：
     读取 registry.yaml，筛选所有 enabled 项目
@@ -120,7 +114,7 @@ Registry 的稳定 ID 用于关联聚合条目；不从仓库名称推导，也�
 
 v1 不使用数据库。每次 build 在内存中生成完整聚合数据，由 Astro 直接渲染到 `dist/`；不写 `projects.json`，也不把生成的页面提交 Git。
 
-v1 不实现 per-project persistent snapshot 或 incremental refresh。其他项目变化触发与每日 full reconciliation / rebuild 的具体方案在 P6 确定。
+v1 不实现 per-project persistent snapshot 或 incremental refresh。P6 的各触发入口均重新执行 Full Refresh，不改变数据模型和构建产物。
 
 ## 模块职责：已确认 v1
 
@@ -134,7 +128,7 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。其他项
 
 ## 实现里程碑：已确认 v1
 
-按 P1 → P6 推进；P1～P5 已完成，P6 为待实现的验收目标。
+按 P1 → P6 推进；P1～P5 已完成，P6 的仓库文件与本仓库外部配置已完成，真实联调待进行。
 
 ### P1 Registry Reader
 
@@ -171,6 +165,7 @@ v1 不实现 per-project persistent snapshot 或 incremental refresh。其他项
 
 ### P6 Sync triggers
 
-- 实现其他项目状态变化触发 Control Plane rebuild。
-- 增加每日一次 full reconciliation / rebuild 兜底。
-- 后续触发入口复用相同构建链路，保证 Full Refresh 幂等，重复事件不产生重复项目或累计业务副作用。
+- 已提供其他项目的状态文件变更触发模板，只监听 `main` 的 `.project/status.json`。
+- 已增加每日一次 full reconciliation / rebuild workflow，支持手动触发。
+- 所有触发入口复用相同构建链路，保证 Full Refresh 幂等，重复事件不产生重复项目或累计业务副作用。
+- Cloudflare Pages Deploy Hook 已绑定 `main`，本仓库 GitHub Secret 已配置；待合入 `main` 后手动联调，并选择一个 public 项目验证事件触发，详见 [P6 自动刷新触发](automatic-rebuild.md)。

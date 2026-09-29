@@ -10,7 +10,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "test": "node --test src/lib/*.test.ts tests/schema.test.mjs",
+    "test": "node --test src/lib/*.test.ts tests/*.test.mjs",
     "typecheck": "tsc --noEmit",
     "test:registry": "node --test src/lib/registry.test.ts",
     "test:schema": "node --test tests/schema.test.mjs",

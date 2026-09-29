@@ -63,5 +63,5 @@ mise exec -- pnpm preview          # 本地预览 dist/
 ## 范围与后续
 
 - P4 仍没有持久化的 `projects.json`；聚合结果只在 build 进程内存中。
-- P5 已完成：Dashboard 通过 Cloudflare Pages 的 GitHub 集成部署，生产和预览 hostname 由 Cloudflare Access 保护，见 [P5 Cloudflare deployment](cloudflare-pages.md)。P6 将实现其他项目变化触发 rebuild，并增加每日一次 full reconciliation / rebuild。
+- P5 已完成：Dashboard 通过 Cloudflare Pages 的 GitHub 集成部署，生产和预览 hostname 由 Cloudflare Access 保护，见 [P5 Cloudflare deployment](cloudflare-pages.md)。P6 的其他项目变化触发及每日 full reconciliation 已写入 workflow，Hook 与本仓库 Secret 已配置，待真实联调，见 [P6 自动刷新触发](automatic-rebuild.md)。
 - PAT / private repo 仍未启用。

@@ -1,0 +1,29 @@
+# Copy this file to .github/workflows/control-plane-rebuild.yml in an enabled public project repo.
+name: Rebuild Project Control Plane on status change
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.project/status.json'
+
+permissions: {}
+
+jobs:
+  trigger-rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare Pages build
+        env:
+          CONTROL_PLANE_DEPLOY_HOOK: ${{ secrets.CONTROL_PLANE_DEPLOY_HOOK }}
+        run: |
+          if [[ -z "$CONTROL_PLANE_DEPLOY_HOOK" ]]; then
+            echo 'Missing GitHub secret: CONTROL_PLANE_DEPLOY_HOOK' >&2
+            exit 1
+          fi
+          if ! curl --proto '=https' --fail --silent --output /dev/null \
+            --max-time 30 --request POST "$CONTROL_PLANE_DEPLOY_HOOK" 2>/dev/null; then
+            echo 'Cloudflare Pages Deploy Hook request failed; check the secret and Pages deployments.' >&2
+            exit 1
+          fi

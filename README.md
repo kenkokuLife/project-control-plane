@@ -10,6 +10,7 @@ Dashboard v1 聚合各项目自行维护的状态，帮助快速了解项目进�
 - [Architecture](docs/architecture.md)：v1 已确认的技术栈、运行链路、模块职责、数据模型与 [P1～P6 实现里程碑](docs/architecture.md#实现里程碑已确认-v1)。
 - [Project Status Schema](schemas/project-status-v1.schema.json)：正式 v1 运行时契约；[ownership 与同步规则](docs/schema-ownership.md)。
 - [Privacy Model](docs/privacy-model.md)：代码与真实运行数据的公开边界、凭证与未来 Feedback 的隐私原则。
+- [P6 自动刷新触发](docs/automatic-rebuild.md)：其他项目的状态变更触发构建、每日兜底及接入步骤。
 
 ## 当前阶段
 
@@ -17,7 +18,7 @@ v1 设计已确认，P1 Registry Reader、P2 GitHub Status Reader、P3 Full Refr
 
 已确认采用 Astro + TypeScript、Node/TypeScript、`registry.yaml` 与 Cloudflare Pages。构建时完成 Full Refresh，再生成静态 Dashboard；具体运行链路以 Architecture 为准。
 
-**P5 已完成**：Cloudflare Pages 已连接本仓库 GitHub `main`，生产 `pages.dev` 已部署，生产 hostname 与 preview wildcard hostname 都受 Cloudflare Access 保护，策略仅允许项目所有者邮箱访问。配置见 [P5 Cloudflare deployment](docs/cloudflare-pages.md)。下一步 P6 实现其他项目状态变化触发 Control Plane rebuild，并增加每日一次的 full reconciliation / rebuild 兜底；private repo / PAT 留到首次接入 private repo 时再处理。
+**P5 已完成；P6 repository implementation 已完成，待真实联调**：Cloudflare Pages 已连接本仓库 GitHub `main`，生产 `pages.dev` 已部署，生产 hostname 与 preview wildcard hostname 都受 Cloudflare Access 保护，策略仅允许项目所有者邮箱访问。P6 提供其他项目的状态变更触发模板，以及每日一次的 full reconciliation 构建；绑定 `main` 的 Deploy Hook 与本仓库 GitHub Secret 已配置。接下来验证手动 rebuild 和一个项目的状态变更触发，见 [P6 自动刷新触发](docs/automatic-rebuild.md)。当前不接入 private repo，也不配置 PAT。
 
 ## 本地运行
 

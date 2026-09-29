@@ -1,6 +1,6 @@
 # P5 Cloudflare Pages deployment
 
-状态：**P5 已完成**。Cloudflare Pages 已连接本仓库 GitHub repo；生产分支 `main` 的 `pages.dev` 站点已部署成功。`main` 更新后由 Cloudflare 自动 build / deploy。P6 尚未实现。
+状态：**P5 已完成**。Cloudflare Pages 已连接本仓库 GitHub repo；生产分支 `main` 的 `pages.dev` 站点已部署成功。`main` 更新后由 Cloudflare 自动 build / deploy。P6 的 Hook 触发配置见 [自动刷新触发](automatic-rebuild.md)。
 
 ## GitHub 集成设置
 
@@ -36,6 +36,6 @@ git diff --check
 
 真实网络构建要检查输出页面显示当前 public repo 的 `Sync ok`。Full Refresh 会隔离单项目 GitHub 读取错误，因此 **构建成功本身不证明远端读取成功**；限流或网络故障会显示 Sync Issues。当前无 PAT，也未启用 private repo。无认证 GitHub API 请求按共享出口 IP 限流。
 
-P5 的 `main` 自动构建只响应本仓库更新。P6 将实现其他项目状态变化触发 Control Plane rebuild，并增加每日一次 full reconciliation / rebuild 兜底。private repo / PAT 留到首次接入 private repo 时再配置。
+P5 的 `main` 自动构建只响应本仓库更新。P6 已提供其他项目状态变化触发和每日一次 full reconciliation 的 workflow；Pages Deploy Hook 和本仓库 GitHub Secret 已配置，待合入 `main` 后真实联调。其他项目按需分别配置 Secret；见 [P6 自动刷新触发](automatic-rebuild.md)。private repo / PAT 留到首次接入 private repo 时再配置。
 
 参考：[Cloudflare Pages Astro 配置](https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/)、[Pages build image v3 版本规则](https://developers.cloudflare.com/pages/configuration/build-image/)、[Pages build 配置](https://developers.cloudflare.com/pages/configuration/build-configuration/)。
